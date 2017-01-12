@@ -8,9 +8,13 @@ module Dashing
       response.stream.write latest_events
 
       @redis = Dashing.redis
-      @redis.psubscribe("#{Dashing.config.redis_namespace}.*") do |on|
+      @redis.psubscribe(["#{Dashing.config.redis_namespace}.*", 'heartbeat']) do |on|
         on.pmessage do |pattern, event, data|
-          response.stream.write("data: #{data}\n\n")
+          if event =~ /dashing_events/
+            response.stream.write("data: #{data}\n\n")
+          elsif event == 'heartbeat'
+            response.stream.write("event: heartbeat\ndata: heartbeat\n\n")
+          end
         end
       end
     rescue IOError
