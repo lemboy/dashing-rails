@@ -12,6 +12,7 @@ module Dashing
     attr_accessor :default_dashboard, :dashboards_views_path, :dashboard_layout_path
     attr_accessor :widgets_views_path, :widgets_js_path, :widgets_css_path
     attr_accessor :engine_path, :scheduler
+    attr_accessor :use_heartbeat, :heartbeat_channel, :close_stream_with_js, :close_stream_channel
 
     def initialize
       @engine_path            = '/dashing'
@@ -40,6 +41,12 @@ module Dashing
       @widgets_views_path     = Rails.root.join('app', 'views', 'dashing', 'widgets')
       @widgets_js_path        = Rails.root.join('app', 'assets', 'javascripts', 'dashing')
       @widgets_css_path       = Rails.root.join('app', 'assets', 'stylesheets', 'dashing')
+
+      # Eexperimental
+      @use_heartbeat = false
+      @heartbeat_channel = 'heartbeat'
+      @close_stream_with_js = false
+      @close_stream_channel = 'close_stream'
     end
 
     def redis

@@ -108,6 +108,10 @@ source.addEventListener 'error', (e)->
 
 source.addEventListener 'message', (e) ->
   data = JSON.parse(e.data)
+  if data.stream_id
+    window.streamId = data.stream_id
+    return
+
   if lastEvents[data.id]?.updatedAt != data.updatedAt
     if Dashing.debugMode
       console.log("Received data for #{data.id}", data)
@@ -125,3 +129,21 @@ source.addEventListener 'dashboards', (e) ->
 
 $(document).ready ->
   Dashing.run()
+
+  closeStream = ->
+    return unless window.streamId
+    stream_id = window.streamId
+    window.streamId = null
+    $.ajax '/dashing/events/close_stream',
+      type: 'DELETE'
+      dataType: 'json'
+      data:
+        stream_id: stream_id
+
+  window.onbeforeunload = () ->
+    closeStream()
+    undefined
+
+  window.onunload = () ->
+    closeStream()
+    undefined
